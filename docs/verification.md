@@ -1,5 +1,13 @@
 # Release verification
 
+## 0.1.2 · October 23, 2026
+
+Dependency security update: Pillow 13.0.0 in the runtime lock; certifi 2026.10.19 and uv 0.13.4 in the development lock. Application code is unchanged.
+
+A fresh hash-locked installation passed `pip check`, Ruff lint and formatting, and the 27 default tests on Windows 11 x64 with Python 3.12, with no Pillow deprecation warnings. The runtime lock passed its advisory audit. The nine opt-in desktop fixtures were not rerun for this dependency-only release; they last passed for 0.1.1.
+
+Release assets are built from the exact commit, with hosted checks, exported-tree/history secret scans and an unauthenticated SHA-256 download check recorded in the versioned release notes.
+
 ## 0.1.1 · October 16, 2026
 
 27 default tests and all nine controlled native desktop checks passed. The runtime lock passed its advisory audit. Capture, save, clipboard and installer behavior are unchanged.

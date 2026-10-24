@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 — 2026-10-23
+
+Security update. Install it in place of 0.1.1.
+
+- Pillow 12.3.0 → 13.0.0, fixing its critical and high image-decoding advisories.
+- Development tools: certifi 2026.7.22 → 2026.10.19 (removes the distrusted emSign roots) and uv 0.13.1 → 0.13.4.
+- No change to capture, save, clipboard, shortcut or installer behavior.
+
 ## 0.1.1 — 2026-10-16
 
 - Apply the shared gold action and light-gold accent palette on neutral gray surfaces.
