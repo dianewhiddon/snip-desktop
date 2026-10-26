@@ -1,5 +1,9 @@
 # Release verification
 
+## 0.1.3 · October 25, 2026
+
+Browser-address fix. With Chrome started normally (no accessibility flag), 0.1.2's lookup returned nothing on the first call and 0.1.3 returned the exact address in about one second with the clipboard sequence unchanged. The 27 default tests, lint and formatting pass on Windows 11 x64 with Python 3.12, and the interactive address test passes. The other eight desktop fixtures were not rerun; capture code is unchanged. Dependencies are unchanged from 0.1.2.
+
 ## 0.1.2 · October 23, 2026
 
 Dependency security update: Pillow 13.0.0 in the runtime lock; certifi 2026.10.19 and uv 0.13.4 in the development lock. Application code is unchanged.

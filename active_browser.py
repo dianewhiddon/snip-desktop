@@ -38,6 +38,45 @@ def foreground_browser():
     return hwnd if hwnd and win32gui.GetClassName(hwnd) in BROWSER_CLASSES else None
 
 
+def _scan(automation, module, hwnd, deadline):
+    """One bounded walk of the browser window for its address."""
+    import comtypes
+
+    walker = automation.ControlViewWalker
+    pending = deque([automation.ElementFromHandle(hwnd)])
+    visited = 0
+    while pending and visited < 200 and time.monotonic() < deadline:
+        element = pending.popleft()
+        visited += 1
+        kind = element.CurrentControlType
+        if kind == 50030:  # Read URL metadata only; never inspect page inputs.
+            if not element.CurrentIsOffscreen:
+                try:
+                    pattern = element.GetCurrentPattern(10002).QueryInterface(
+                        module.IUIAutomationValuePattern
+                    )
+                    url = normalize_url(pattern.CurrentValue or "")
+                    if url:
+                        return url
+                except comtypes.COMError:
+                    pass
+            continue
+        identity = (element.CurrentAutomationId or "").casefold()
+        name = (element.CurrentName or "").casefold()
+        if kind in {50003, 50004} and (identity in ADDRESS_IDS or name in ADDRESS_NAMES):
+            pattern = element.GetCurrentPattern(10002).QueryInterface(
+                module.IUIAutomationValuePattern
+            )
+            url = normalize_url(pattern.CurrentValue or "")
+            if url:
+                return url
+        child = walker.GetFirstChildElement(element)
+        while child and len(pending) + visited < 200 and time.monotonic() < deadline:
+            pending.append(child)
+            child = walker.GetNextSiblingElement(child)
+    return None
+
+
 def read_url(hwnd):
     """Read only known address controls outside page documents; otherwise return None.
 
@@ -57,39 +96,14 @@ def read_url(hwnd):
         automation = CreateObject(module.CUIAutomation8, interface=module.IUIAutomation2)
         automation.ConnectionTimeout = 500
         automation.TransactionTimeout = 500
-        walker = automation.ControlViewWalker
-        pending = deque([automation.ElementFromHandle(hwnd)])
-        visited = 0
         deadline = time.monotonic() + 5
-        while pending and visited < 200 and time.monotonic() < deadline:
-            element = pending.popleft()
-            visited += 1
-            kind = element.CurrentControlType
-            if kind == 50030:  # Read URL metadata only; never inspect page inputs.
-                if not element.CurrentIsOffscreen:
-                    try:
-                        pattern = element.GetCurrentPattern(10002).QueryInterface(
-                            module.IUIAutomationValuePattern
-                        )
-                        url = normalize_url(pattern.CurrentValue or "")
-                        if url:
-                            return url
-                    except comtypes.COMError:
-                        pass
-                continue
-            identity = (element.CurrentAutomationId or "").casefold()
-            name = (element.CurrentName or "").casefold()
-            if kind in {50003, 50004} and (identity in ADDRESS_IDS or name in ADDRESS_NAMES):
-                pattern = element.GetCurrentPattern(10002).QueryInterface(
-                    module.IUIAutomationValuePattern
-                )
-                url = normalize_url(pattern.CurrentValue or "")
-                if url:
-                    return url
-            child = walker.GetFirstChildElement(element)
-            while child and len(pending) + visited < 200 and time.monotonic() < deadline:
-                pending.append(child)
-                child = walker.GetNextSiblingElement(child)
+        while time.monotonic() < deadline:
+            url = _scan(automation, module, hwnd, deadline)
+            if url:
+                return url
+            # Chromium exposes the page URL only after an accessibility client
+            # first connects, so the first scan can miss it; retry briefly.
+            time.sleep(0.3)
         return None
     except (OSError, comtypes.COMError):
         return None

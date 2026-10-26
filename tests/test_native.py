@@ -204,7 +204,7 @@ class NativeTests(unittest.TestCase):
             ctx = driver.chromium.launch_persistent_context(
                 folder,
                 headless=False,
-                args=["--force-renderer-accessibility"],
+                # No accessibility flag: real Chrome enables it only when a reader connects.
                 viewport={"width": 800, "height": 600},
             )
             try:

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-10-25
+
+- Full web page reads the browser address on the first try. Chrome, Edge and Brave expose the page address to Windows accessibility only after a reader first connects, so 0.1.2's single lookup usually missed and asked for the URL. Snip now retries within its five-second limit; a typical lookup takes about a second. Still no keystrokes and no clipboard access.
+- The address test now launches Chrome without forcing accessibility on, matching real use; it fails on 0.1.2 and passes on 0.1.3.
+- Release checks add an install from the published download on a PC with consumer antivirus protection on.
+
 ## 0.1.2 — 2026-10-23
 
 Security update. Install it in place of 0.1.1.

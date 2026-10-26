@@ -8,6 +8,7 @@
 6. Export tracked files with `git archive --format=zip --prefix=Snip-<version>/ --output=dist/Snip-<version>-source.zip <tag>`. The archive contains source and setup scripts, not a signed executable. Generate `SHA256SUMS.txt` from those exact bytes.
 7. Extract the archive in a fresh folder. Run the documented installer, dependency check and tests there. Do not copy an existing virtual environment or browser profile into the test installation.
 8. Upload the source ZIP and checksum file to a GitHub release. Download both through an unauthenticated connection, compare SHA-256, inspect the archive and confirm the release tag equals `main`.
-9. Record the release date, version, checks, platform and unverified boundaries in [verification.md](verification.md). Confirm the local checkout is clean and matches GitHub.
+9. On a Windows PC running a consumer antivirus with web and file protection on and no exclusions for the test folders (Avast on Diane's laptop is the reference), download the published ZIP through a browser or curl, extract it, confirm the download completed and no file was quarantined, then run the installer and start the app. Antivirus heuristics can block launcher scripts or cut off a download that a developer machine accepts; Silent Type 0.4.0–0.4.1 shipped such a launcher.
+10. Record the release date, version, checks, platform and unverified boundaries in [verification.md](verification.md). Confirm the local checkout is clean and matches GitHub.
 
 Keep release notes factual. Do not call a source archive a standalone installer, claim macOS support, or describe tests as a guarantee of correctness. Publish no capture from a real private desktop in release documentation.
