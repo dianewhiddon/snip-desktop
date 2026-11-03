@@ -112,19 +112,33 @@ class App:
 
     def post(self, fn):
         self.q.put(fn)
+        try:
+            # Wake the Tk thread now so it can sleep between actions instead of looking
+            # for work. Tk queues a call from another thread for its main loop.
+            self.root.after(0, self.run_queued)
+        except Exception:  # window not built yet or closing; the slow check covers it
+            pass
 
-    def poll(self):
+    def run_queued(self):
         for _ in range(50):
             try:
                 fn = self.q.get_nowait()
             except queue.Empty:
-                break
+                return
             try:
                 fn()
             except Exception as exc:
                 self.report_error("Action", exc)
+        if not self.q.empty() and self.state != "closing":
+            self.root.after(
+                0, self.run_queued
+            )  # a long burst: let the window breathe between batches
+
+    def poll(self):
+        """Slow safety check; `post` wakes the queue at once, so this rarely finds work."""
+        self.run_queued()
         if self.state != "closing":
-            self.root.after(40, self.poll)
+            self.root.after(250, self.poll)
 
     def notify(self, message):
         try:

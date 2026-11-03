@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4 — 2026-11-03
+
+Battery.
+
+- Snip's window no longer looks for work 25 times a second. It sleeps until something is posted to it, with a slow 4-per-second safety check, so the processor can sleep between uses. Idle use measured on the maintainer's laptop with the personal edition of the same change fell from about 0.39% to about 0.08% of one processor core.
+- No change to the Ctrl+Shift+S shortcut (it already waited for Windows without polling), capture, annotation, saving, the clipboard or the installer.
+
 ## 0.1.3 — 2026-10-25
 
 - Full web page reads the browser address on the first try. Chrome, Edge and Brave expose the page address to Windows accessibility only after a reader first connects, so 0.1.2's single lookup usually missed and asked for the URL. Snip now retries within its five-second limit; a typical lookup takes about a second. Still no keystrokes and no clipboard access.

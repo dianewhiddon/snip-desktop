@@ -1,5 +1,11 @@
 # Release verification
 
+## 0.1.4 · November 3, 2026
+
+Battery release. The window's action queue wakes when work is posted instead of on a 40-millisecond timer; a 250-millisecond check remains as a safety net. Capture, annotation, saving, the shortcut and the installer are unchanged.
+
+36 default tests, Ruff lint and Ruff formatting passed on Windows 11 x64 with Python 3.12; nine opt-in tests were skipped as before. Idle use was measured on one laptop with the personal edition of the same change: about 0.39% of one core before and about 0.08% after, over 40 seconds, at the resolution of the Windows process timer. A live capture was not repeated on this edition's installation for this release.
+
 ## 0.1.3 · October 25, 2026
 
 Browser-address fix. With Chrome started normally (no accessibility flag), 0.1.2's lookup returned nothing on the first call and 0.1.3 returned the exact address in about one second with the clipboard sequence unchanged. The 27 default tests, lint and formatting pass on Windows 11 x64 with Python 3.12, and the interactive address test passes. The other eight desktop fixtures were not rerun; capture code is unchanged. Dependencies are unchanged from 0.1.2.
