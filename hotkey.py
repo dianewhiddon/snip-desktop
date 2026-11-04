@@ -80,8 +80,14 @@ class MenuHotkey:
             self.registered = False
             self.ready.set()
 
-    def close(self):
+    def request_stop(self):
+        """Signal without joining; the GUI may still owe this thread a Tk call."""
         self.stopping.set()
+        if self.thread_id:
+            self.user32.PostThreadMessageW(self.thread_id, 0x0012, 0, 0)
+
+    def close(self):
+        self.request_stop()
         self.ready.wait(2)
         if self.thread.is_alive() and self.thread_id:
             self.user32.PostThreadMessageW(self.thread_id, 0x0012, 0, 0)

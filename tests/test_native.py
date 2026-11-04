@@ -23,6 +23,14 @@ from windows_ui import place
 
 @unittest.skipUnless(os.environ.get("SNIP_INTERACTIVE") == "1", "interactive desktop fixture")
 class NativeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Match main() before creating Tk windows: fixtures use physical pixels,
+        # including on a laptop configured at 200% display scaling.
+        import ctypes
+
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+
     def setUp(self):
         self.root = tk.Tk()
         self.root.withdraw()
@@ -40,8 +48,15 @@ class NativeTests(unittest.TestCase):
     def test_url_enter_respects_focused_cancel_and_entry(self):
         prompt = URLPrompt(self.root)
         self.root.update()
+        self.assertTrue(prompt.cancel_button.winfo_ismapped())
+        self.assertTrue(prompt.capture_button.winfo_ismapped())
+        self.assertLessEqual(
+            prompt.capture_button.winfo_rooty() + prompt.capture_button.winfo_height(),
+            prompt.top.winfo_rooty() + prompt.top.winfo_height(),
+        )
         prompt.entry.insert(0, "https://example.com/")
         prompt.cancel_button.focus_force()
+        self.root.update()
         prompt.cancel_button.event_generate("<Return>")
         self.root.update()
         self.assertIsNone(prompt.result)
@@ -50,6 +65,7 @@ class NativeTests(unittest.TestCase):
         self.root.update()
         prompt.entry.insert(0, "https://example.com/")
         prompt.entry.focus_force()
+        self.root.update()
         prompt.entry.event_generate("<Return>")
         self.root.update()
         self.assertEqual(prompt.result, "https://example.com/")

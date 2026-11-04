@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.5 — 2026-11-03
+
+Windows interaction and shutdown reliability.
+
+- The web-address dialog sizes to its contents so its buttons remain visible at 200% display scaling.
+- A selected capture retains the session while waiting for the menu to disappear; another action or Quit cannot interrupt that interval.
+- Quit signals the native shortcut thread and keeps Tk responsive until a pending callback finishes, avoiding the join/GUI wait cycle.
+- Added actual initialized-window dispatch/shutdown coverage and matched desktop fixtures to the application's DPI mode.
+
 ## 0.1.4 — 2026-11-03
 
 Battery.

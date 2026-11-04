@@ -52,7 +52,12 @@ class URLPrompt:
         self.cancel_button.bind("<Return>", lambda e: self.close())
         self.capture_button.bind("<Return>", lambda e: self.accept())
         left, upper, right, bottom = work_area(root)
-        self.top.geometry(f"{min(560, right - left - 32)}x240")
+        # Font metrics grow with Windows display scaling. A fixed 240-pixel
+        # height hides the action row at 200%, making keyboard focus fail too.
+        self.top.update_idletasks()
+        width = min(max(560, self.top.winfo_reqwidth()), right - left - 32)
+        height = min(max(240, self.top.winfo_reqheight()), bottom - upper - 32)
+        self.top.geometry(f"{width}x{height}")
         self.entry.focus_force()
         self.top.grab_set()
 

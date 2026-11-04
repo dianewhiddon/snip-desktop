@@ -8,6 +8,7 @@ bottom (content stops moving), on Esc, or at the configured height cap.
 
 import ctypes
 import ctypes.wintypes as wintypes
+import logging
 import time
 
 import mss
@@ -89,10 +90,12 @@ def capture_scrolling(
 
             for _step in range(max_steps):
                 if user32.GetAsyncKeyState(0x1B) & 0x8000 or user32.GetForegroundWindow() != owner:
+                    logging.getLogger(__name__).info("Scroll stopped: Escape or foreground changed")
                     break
                 current = wintypes.POINT()
                 user32.GetCursorPos(ctypes.byref(current))
                 if abs(current.x - cx) > 8 or abs(current.y - cy) > 8:
+                    logging.getLogger(__name__).info("Scroll stopped: pointer moved")
                     break  # Hand control back when the user moves the pointer.
                 user32.SetCursorPos(cx, cy)
                 user32.mouse_event(0x0800, 0, 0, -120 * ticks, 0)  # wheel down
@@ -107,6 +110,7 @@ def capture_scrolling(
                 nxt_sig = _sig(nxt)
                 dy, err = find_offset(prev_sig, nxt_sig)
                 if dy <= 0 or err > MATCH_MAX_ERR:
+                    logging.getLogger(__name__).info("Scroll stopped: no reliable image overlap")
                     break  # Do not join unrelated rows after a lost alignment.
                 stalls = 0
                 added = min(dy, max_height - total)

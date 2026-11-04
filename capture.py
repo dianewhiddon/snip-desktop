@@ -111,12 +111,13 @@ class App:
         )
 
     def post(self, fn):
+        """Queue work on Tk; the slow timer covers startup and wake failures."""
+        if self.state == "closing":
+            return
         self.q.put(fn)
         try:
-            # Wake the Tk thread now so it can sleep between actions instead of looking
-            # for work. Tk queues a call from another thread for its main loop.
             self.root.after(0, self.run_queued)
-        except Exception:  # window not built yet or closing; the slow check covers it
+        except (RuntimeError, tk.TclError):
             pass
 
     def run_queued(self):
@@ -235,9 +236,16 @@ class App:
         ]
 
         def picked(callback):
-            self.set_state("idle")
             if callback:
-                self.root.after(230, lambda: self.post(callback))
+                self.set_state("preparing capture")
+
+                def selected():
+                    self.set_state("idle")
+                    callback()
+
+                self.root.after(230, lambda: self.post(selected))
+            else:
+                self.set_state("idle")
 
         try:
             Palette(self.root, actions, picked)
@@ -413,7 +421,15 @@ class App:
         if not self.available():
             return
         self.set_state("closing")
-        self.root.quit()
+        if self.menu_hotkey:
+            self.menu_hotkey.request_stop()
+        self._finish_quit()
+
+    def _finish_quit(self):
+        if self.menu_hotkey and self.menu_hotkey.thread.is_alive():
+            self.root.after(10, self._finish_quit)
+        else:
+            self.root.quit()
 
     def run(self, register_hotkey=True):
         self.icon.run_detached()

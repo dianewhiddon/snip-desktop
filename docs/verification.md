@@ -1,5 +1,13 @@
 # Release verification
 
+## 0.1.5 · November 3, 2026
+
+38 Windows tests including all nine controlled desktop checks passed at 200% display scaling. Real window/scroll capture pixels, region selection, browser address lookup, the URL prompt, palette, annotation and tray lifecycle were exercised with fictional/local fixtures. No real private capture or clipboard contents are included in the test artifacts.
+
+Runtime dependency advisory checks found no known vulnerabilities. Public runtime dependencies are unchanged. A transient Windows lock on a temporary Chromium log caused one cleanup failure; the isolated final rerun is recorded in the release evidence.
+
+The source archive, fresh installation, exact-commit hosted checks and anonymous download checksum are verified before publication is closed out. Real reboot/sign-in and untested hardware are not certified by these fixtures.
+
 ## 0.1.4 · November 3, 2026
 
 Battery release. The window's action queue wakes when work is posted instead of on a 40-millisecond timer; a 250-millisecond check remains as a safety net. Capture, annotation, saving, the shortcut and the installer are unchanged.
