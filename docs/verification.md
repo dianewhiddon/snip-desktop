@@ -49,7 +49,7 @@ Local verification: October 15, 2026, Windows 11 x64, Python 3.12.
 - Optional shortcut creation/removal and refusal to remove a foreign shortcut passed in an isolated directory.
 - An independent Impeccable review inspected eight native interface captures. Its two material findings, image access in a narrow editor and focused Cancel behavior, were fixed and scored resolved in the follow-up review.
 
-GitHub's [Checks workflow](https://github.com/diane-blip/snip-desktop/actions) installs the released environment on Windows, runs the default suite and audits dependencies. Nine desktop fixtures are deliberately skipped there; local interactive evidence is separate from hosted CI.
+GitHub's [Checks workflow](https://github.com/dianewhiddon/snip-desktop/actions) installs the released environment on Windows, runs the default suite and audits dependencies. Nine desktop fixtures are deliberately skipped there; local interactive evidence is separate from hosted CI.
 
 The release process also requires a fresh archive installation, full public-history and exported-tree secret scans, and an unauthenticated download/checksum comparison. The versioned release notes record those completed checks for the exact published artifact.
 
